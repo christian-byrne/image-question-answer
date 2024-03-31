@@ -1,0 +1,10 @@
+Checking if images exist
+Images already exist: 82 positive photos, 90 negative photos
+Creating datablock
+
+BinaryImageClassifier(positive=real
+negative=synthetic
+photos_per_phrase=10
+batch_size=64)
+Positive training photos preview: ['/home/c_byrne/projects/ml/practical-deep-learning/image-question-answer/data/image_downloads/real/rgb-movie-scene-H', '/home/c_byrne/projects/ml/practical-deep-learning/image-question-answer/data/image_downloads/re', '/home/c_byrne/projects/ml/practical-deep-learning/image-question-answer/data/image_downloads/real/rgb-movie-scene-']
+Negative training photos preview: ['/home/c_byrne/projects/ml/practical-deep-learning/image-question-answer/data/image_downloads/synt', '/home/c_byrne/projects/ml/practical-deep-learning/image-question-answer/data/image_downloads/synthetic/surreal art', '/home/c_byrne/projects/ml/practical-deep-learning/image-question-answer/data/image_downloads/synthetic/rgb-square-H']

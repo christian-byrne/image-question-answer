@@ -8,3 +8,7 @@
 **/*.pyz
 **/*.pywz
 **/*.pyzw
+
+# Unignore images in wiki folder
+!wiki/**/*.png
+!wiki/**/*.jpg

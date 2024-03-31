@@ -5,7 +5,7 @@ from constants import VERBOSE
 from utils.path_utils import ProjPaths
 
 from termcolor import colored
-from typing import Any
+from typing import Any, Union
 
 
 class Logger:
@@ -27,7 +27,7 @@ class Logger:
         self,
         message: Any,
         print_only: bool = False,
-        color_override: str = "green",
+        color_override: Union[str, bool] = False,
         inline: bool = False,
     ):
         if VERBOSE:
@@ -61,7 +61,7 @@ class Logger:
         with open(self.logfile_path, "a") as f:
             f.write(str(message) + "\n")
 
-    def __print(self, message, color_override=None, inline=False):
+    def __print(self, message, color_override=False, inline=False):
         if VERBOSE:
             print(
                 colored(

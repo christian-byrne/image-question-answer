@@ -57,14 +57,14 @@ class BinaryImageClassifier:
         self.logger.log(self)
 
     def __str__(self):
-        return "\n".join(
+        return "\n" + "\n".join(
             [
                 f"BinaryImageClassifier(positive={self.positive}",
                 f"negative={self.negative}",
                 f"photos_per_phrase={self.photos_per_phrase}",
                 f"batch_size={self.batch_size})",
-                f"Positive training photos preview: {[str(photo)[:20] for photo in self.positive_training_photos[:4]]}",
-                f"Negative training photos preview: {[str(photo)[:20] for photo in self.negative_training_photos[:4]]}",
+                f"Positive training photos preview: {[str(photo)[-36:] for photo in self.positive_training_photos[:4]]}",
+                f"Negative training photos preview: {[str(photo)[-36:] for photo in self.negative_training_photos[:4]]}",
             ]
         )
 
@@ -78,7 +78,6 @@ class BinaryImageClassifier:
         prediction, decoded_prediction, probs = self.model.predict(
             PILImage.create(image_path)
         )
-        self.print_prediction((prediction, decoded_prediction, probs))
         return prediction, decoded_prediction, probs
 
     def print_prediction(
@@ -88,12 +87,18 @@ class BinaryImageClassifier:
         ),
     ) -> None:
         prediction, _, probs = predict_out
-        print(f"This is a {prediction} image")
+        if probs[0] * 100 < 1:
+            prob_string = f"<1% ({probs[0]:.4f})"
+        else:
+            prob_string = f"{probs[0] * 100:.1f}% ({probs[0]:.4f})"
+        prediction_string = f"{prediction}"
+
+        print(f"{'Prediction:':<42}{prediction_string:>38}")
         print(
-            f"Probability it's a {self.positive} image: {probs[0] * 100:.4f}% ({probs[0]:.4f})"
+            f"{'Probability it is a ' + self.positive + ' image:':<42}{prob_string:>38}"
         )
 
-    def train_(self) -> None:
+    def train_(self, epochs: int = 4) -> None:
         learn_ = vision_learner(self.data_loader, resnet18, metrics=error_rate)
 
         # Verify the implementation of the vision_learner function constructs and returns a Learner object
@@ -104,8 +109,10 @@ class BinaryImageClassifier:
             learn_, Learner
         ), "The vision_learner function did not return a Learner object"
 
-        learn_.fine_tune(3)
+        self.logger.log("Training model")
+        print()
 
+        learn_.fine_tune(epochs)
         self.model = learn_
 
     def collect_images_recursive(self, path: Path) -> List[Path]:

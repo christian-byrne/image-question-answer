@@ -16,10 +16,10 @@ def main():
             "negative": "synthetic",
             "positive_phrases": [
                 "landscape photos",
-                "nature photos",
-                "real portrait people photos",
-                "everyday person photos",
-                "architecture photos",
+                # "nature photos",
+                # "real portrait people photos",
+                # "everyday person photos",
+                # "architecture photos",
                 "cityscape photos",
                 "wildlife photos",
                 "human being photos",
@@ -27,12 +27,12 @@ def main():
             "negative_phrases": [
                 "anime images",
                 "abstract art ",
-                "surreal artistic compositions",
+                # "surreal artistic compositions",
                 "illustrations",
-                "surreal experimental designs",
-                "fantasy images",
-                "futuristic digital sci-fi images",
-                "pixel art images",
+                # "surreal experimental designs",
+                # "fantasy images",
+                # "futuristic digital sci-fi images",
+                # "pixel art images",
                 "digital retro images",
             ],
             "test_photos": [
@@ -47,35 +47,46 @@ def main():
         }
     ]
 
+    testing_rate = 20
+    testing_batch_size = 64
     for i in range(min(EXAMPLE_COUNT, len(examples))):
         example = examples[i]
-        print(f"Example {i + 1}: {example['title']}\n")
+        print(f"\n\nExample {i + 1}: {example['title']}\n")
+        print(colored(f"{'Positive':<42}{example['positive']:>38}", "light_green"))
+        print(colored(f"{'Negative':<42}{example['negative']:>38}", "light_red"))
+        print("\nPositive Image Search Phrases:")
+        for phrase in example["positive_phrases"]:
+            print(f"  - ~{testing_rate} images from searching: '{phrase}'")
+        print("\nNegative Image Search Phrases:")
+        for phrase in example["negative_phrases"]:
+            print(f"  - ~{testing_rate} images from searching: '{phrase}'")
+        print()
 
         model = BinaryImageClassifier(
             example["positive"],
             example["negative"],
             example["positive_phrases"],
             example["negative_phrases"],
-            photos_per_phrase=4,
-            batch_size=16,
+            photos_per_phrase=testing_rate,
+            batch_size=testing_batch_size,
         )
-        model.train_()
+        model.train_(epochs=4)
         sleep(1)
 
         for test_photo in example["test_photos"]:
-
-            print(f"Testing {test_photo[0]} photo")
+            print()
+            print(f"{'Testing Photo:':<42}{test_photo[0]:>38}")
+            print(f"{'Expected Result:':<42}{test_photo[2]:>38}")
             res = model.predict(
                 ProjPaths.get_data(Path(f"test_images/{test_photo[1]}"))
             )
-            print(f"Expected: {test_photo[2]}")
+            model.print_prediction(res)
             if res[0].lower() == test_photo[2].lower():
-                print("✅✅" + colored("SUCESS", "green"))
+                print((" ✅✅ " + colored("SUCESS", "green")) * 3)
             else:
-                print("❌❌" + colored("~~FAILURE~~", "red"))
-
-            print("\n")
+                print((" ❌❌ " + colored("FAILURE", "red")) * 3)
 
 
 if __name__ == "__main__":
     main()
+    print()

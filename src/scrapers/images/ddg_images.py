@@ -19,7 +19,7 @@ class DuckDuckGoImageScraper:
         sleep_interval: float = 10.0,
         timout: int = 10,
     ):
-        self.logger = Logger("DuckDuckGoImageScraper", "green")
+        self.logger = Logger("DuckDuckGoImageScraper", "cyan")
         self.dl_dirname = downloads_dirname
         self.dl_path = ProjPaths.get_data(self.dl_dirname)
 
@@ -27,7 +27,7 @@ class DuckDuckGoImageScraper:
         self.timeout = timout
 
         self.logger.log(f"Download path (abs): {self.dl_path}")
-        self.logger.log(f"Download path (rel): {self.dl_dirname}")
+        self.logger.log(f"Download folder name: {self.dl_dirname}")
 
     def get_dl_path(self) -> Path:
         return self.dl_path

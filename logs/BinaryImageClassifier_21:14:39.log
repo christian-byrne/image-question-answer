@@ -1,0 +1,10 @@
+Checking if images exist
+Images already exist: 82 positive photos, 90 negative photos
+Creating datablock
+
+BinaryImageClassifier(positive=real
+negative=synthetic
+photos_per_phrase=20
+batch_size=64)
+Positive training photos preview: ['4px-jpg-26.jpg', 'e photos_0.jpg']
+Negative training photos preview: ['e images_1.jpg', 'ositions_0.jpg']
