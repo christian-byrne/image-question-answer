@@ -15,11 +15,11 @@ from typing import List, Tuple
 class DuckDuckGoImageScraper:
     def __init__(
         self,
-        downloads_dirname: str = "duckduckgo_image_downloads",
+        downloads_dirname: str = "image_downloads",
         sleep_interval: float = 10.0,
         timout: int = 10,
     ):
-        self.logger = Logger("DuckDuckGoImageScraper")
+        self.logger = Logger("DuckDuckGoImageScraper", "green")
         self.dl_dirname = downloads_dirname
         self.dl_path = ProjPaths.get_data(self.dl_dirname)
 

@@ -1,4 +1,5 @@
 """https://docs.fast.ai/learner.html#Learner.predict"""
+
 from pathlib import Path
 
 from PIL import Image
@@ -21,8 +22,8 @@ from fastai.vision.all import (
 
 from utils.path_utils import ProjPaths
 from scrapers.images.ddg_images import DuckDuckGoImageScraper
-from logging_.log_and_print import Logger
 from constants import PHOTO_DL_DIRNAME, PICTURE_EXTENSION_LIST
+from logging_.log_and_print import Logger
 
 from typing import List, Tuple, Union, Any
 
@@ -36,28 +37,36 @@ class BinaryImageClassifier:
         negative_phrases,
         photos_per_phrase=4,
         batch_size=32,
+        img_res=128,
     ):
+        self.logger = Logger("BinaryImageClassifier", "blue")
         self.positive = positive
         self.negative = negative
         self.batch_size = batch_size
+        self.img_res = img_res
         self.__set_phrases(photos_per_phrase, positive_phrases, negative_phrases)
 
-        self.logger = Logger("BinaryImageClassifier")
         self.image_scraper = DuckDuckGoImageScraper(PHOTO_DL_DIRNAME)
         self.training_images_path = self.image_scraper.get_dl_path()
         self.positive_path = self.training_images_path / self.positive
         self.negative_path = self.training_images_path / self.negative
-
         self.positive_training_photos, self.negative_training_photos = self.get_photos()
-        self.logger.log(f"Positive training photos: {self.positive_training_photos}")
-        self.logger.log(f"Negative training photos: {self.negative_training_photos}\n")
 
         self.__verify_dataset()
         self.__create_datablock()
         self.logger.log(self)
 
     def __str__(self):
-        return f"BinaryImageClassifier(positive={self.positive}, negative={self.negative}, photos_per_phrase={self.photos_per_phrase}, batch_size={self.batch_size})"
+        return "\n".join(
+            [
+                f"BinaryImageClassifier(positive={self.positive}",
+                f"negative={self.negative}",
+                f"photos_per_phrase={self.photos_per_phrase}",
+                f"batch_size={self.batch_size})",
+                f"Positive training photos preview: {[str(photo)[:20] for photo in self.positive_training_photos[:4]]}",
+                f"Negative training photos preview: {[str(photo)[:20] for photo in self.negative_training_photos[:4]]}",
+            ]
+        )
 
     def __len__(self):
         return len(self.positive_training_photos) + len(self.negative_training_photos)
@@ -69,9 +78,20 @@ class BinaryImageClassifier:
         prediction, decoded_prediction, probs = self.model.predict(
             PILImage.create(image_path)
         )
-        print(f"This is a {prediction} image")
-        print(f"Probability it's a {self.positive} image: {probs[0]:.4f}")
+        self.print_prediction((prediction, decoded_prediction, probs))
         return prediction, decoded_prediction, probs
+
+    def print_prediction(
+        self,
+        predict_out: (
+            tuple[Any | None, Any | None, Any, Any] | tuple[Any | None, Any, Any]
+        ),
+    ) -> None:
+        prediction, _, probs = predict_out
+        print(f"This is a {prediction} image")
+        print(
+            f"Probability it's a {self.positive} image: {probs[0] * 100:.4f}% ({probs[0]:.4f})"
+        )
 
     def train_(self) -> None:
         learn_ = vision_learner(self.data_loader, resnet18, metrics=error_rate)
@@ -150,7 +170,7 @@ class BinaryImageClassifier:
             get_items=get_image_files,
             splitter=RandomSplitter(valid_pct=0.2, seed=42),
             get_y=parent_label,
-            item_tfms=[Resize(128, method="squish")],
+            item_tfms=[Resize(self.img_res, method="squish")],
         ).dataloaders(self.training_images_path, bs=self.batch_size)
 
         self.data_loader = data
@@ -180,7 +200,7 @@ class BinaryImageClassifier:
         ) + 1
         if photos_per_phrase < required_photos_per_phrase:
             self.logger.log(
-                f"Number of photos per phrase is too low to create batches of size {batch_size}."
+                f"Number of photos per phrase is too low to create batches of size {self.batch_size}."
                 + f"Increasing to {required_photos_per_phrase}"
             )
             self.photos_per_phrase = required_photos_per_phrase

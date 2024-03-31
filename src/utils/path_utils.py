@@ -3,7 +3,7 @@ from pathlib import Path
 from constants import PROJECT_NAME
 
 from typing import Union
-from types.errors import raises_exception
+from types_.errors import raises_exception
 
 
 class ProjPaths:
@@ -12,7 +12,7 @@ class ProjPaths:
     logs_name = "logs"
 
     @staticmethod
-    def __append_return(path: Path, append_with: Union[Path, False]) -> Path:
+    def __append_return(path: Path, append_with: Union[Path, bool]) -> Path:
         if append_with:
             return ProjPaths.validate_path(path / append_with)
         return ProjPaths.validate_path(path)
@@ -29,7 +29,7 @@ class ProjPaths:
         return path
 
     @staticmethod
-    def get_proj_root(append_with: Union[Path, False] = False) -> Path:
+    def get_proj_root(append_with: Union[Path, bool] = False) -> Path:
         proj_path_parts = Path(__file__).resolve().parent.parts
         proj_dir_index = next(
             (i for i, part in enumerate(proj_path_parts) if part == PROJECT_NAME), None
@@ -43,13 +43,19 @@ class ProjPaths:
         return ProjPaths.__append_return(proj_root_abs_path, append_with)
 
     @staticmethod
-    def get_src(append_with: Union[Path, False] = False) -> Path:
-        return ProjPaths.__append_return(Path(ProjPaths.src_name), append_with)
+    def get_src(append_with: Union[Path, bool] = False) -> Path:
+        return ProjPaths.__append_return(
+            ProjPaths.get_proj_root() / Path(ProjPaths.src_name), append_with
+        )
 
     @staticmethod
-    def get_data(append_with: Union[Path, False] = False) -> Path:
-        return ProjPaths.__append_return(Path(ProjPaths.data_name), append_with)
+    def get_data(append_with: Union[Path, bool] = False) -> Path:
+        return ProjPaths.__append_return(
+            ProjPaths.get_proj_root() / Path(ProjPaths.data_name), append_with
+        )
 
     @staticmethod
-    def get_logs(append_with: Union[Path, False] = False) -> Path:
-        return ProjPaths.__append_return(Path(ProjPaths.logs_name), append_with)
+    def get_logs(append_with: Union[Path, bool] = False) -> Path:
+        return ProjPaths.__append_return(
+            ProjPaths.get_proj_root() / Path(ProjPaths.logs_name), append_with
+        )
