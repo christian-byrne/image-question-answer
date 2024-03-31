@@ -1,5 +1,5 @@
 from time import sleep
-from model.train import TrainClassifier
+from src.model.image_classifier import BinaryImageClassifier
 
 
 def main():
@@ -26,7 +26,7 @@ def main():
         "pixel art images",
         "digital retro images",
     ]
-    train = TrainClassifier(
+    train = BinaryImageClassifier(
         positive,
         negative,
         positive_phrases,
