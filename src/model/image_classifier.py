@@ -144,6 +144,18 @@ class BinaryImageClassifier:
             self.negative, self.negative_phrases
         )
 
+        # Remove any photos that don't have a download_path attribute or don't exist
+        positive_photos = [
+            photo
+            for photo in positive_photos
+            if photo.get("download_path") and photo["download_path"].exists()
+        ]
+        negative_photos = [
+            photo
+            for photo in negative_photos
+            if photo.get("download_path") and photo["download_path"].exists()
+        ]
+
         return [photo["download_path"] for photo in positive_photos], [
             photo["download_path"] for photo in negative_photos
         ]

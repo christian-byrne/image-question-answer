@@ -15,8 +15,8 @@ class Logger:
         self.prefix_color = f"light_{color}"
 
         # Create logfile
-        hour_time = time.strftime("%H:%M:%S")
-        self.filename = f"{caller_name}_{hour_time}.log"
+        hour_time = time.strftime("%H_%M_%S")
+        self.filename = f"{caller_name}-{hour_time}.log"
         try:
             self.logfile_path = ProjPaths.get_logs(self.filename)
         except FileNotFoundError:
